@@ -76,6 +76,7 @@ KEY_TouchEvent = "touch"
 KEY_LongTouchEvent = "long_touch"
 KEY_SelectEvent = "select"
 KEY_UnselectEvent = "unselect"
+KEY_RotateEvent = "rotate"
 KEY_SwipeEvent = "swipe"
 KEY_ScrollEvent = "scroll"
 KEY_SetTextEvent = "set_text"
@@ -151,6 +152,8 @@ class InputEvent(object):
             return ExitEvent(event_dict=event_dict)
         elif event_type == KEY_SpawnEvent:
             return SpawnEvent(event_dict=event_dict)
+        elif event_type == KEY_RotateEvent:
+            return RotateEvent(event_dict=event_dict)
 
     @abstractmethod
     def get_event_str(self, state):
@@ -826,7 +829,34 @@ class SpawnEvent(InputEvent):
     def get_event_str(self, state):
         return "%s()" % self.__class__.__name__
 
+class RotateEvent(InputEvent):
+    """
+    An event to rotate the device screen.
+    """
+    def __init__(self, orientation, event_dict=None):
+        super(RotateEvent, self).__init__()
+        self.event_type = KEY_RotateEvent
+        self.orientation = orientation  # 'landscape' or 'portrait'
+        if event_dict is not None:
+            self.__dict__.update(event_dict)
 
+    def send(self, device):
+        device.rotate_screen(self.orientation)
+
+    def get_event_str(self, state):
+        return "%s(orientation=%s)" % (self.__class__.__name__, self.orientation)
+
+    @staticmethod
+    def get_random_instance(device, app):
+        # This method is used to generate random instances, if needed.
+        return RotateEvent(random.choice(['landscape', 'portrait']))
+
+    def to_dict(self):
+        return {
+            "event_type": self.event_type,
+            "orientation": self.orientation
+        }
+    
 EVENT_TYPES = {
     KEY_KeyEvent: KeyEvent,
     KEY_TouchEvent: TouchEvent,

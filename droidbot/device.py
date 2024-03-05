@@ -916,3 +916,25 @@ class Device(object):
         if self.minicap.check_connectivity():
             print("[CONNECTION] %s is reconnected." % self.minicap.__class__.__name__)
         self.pause_sending_event = False
+    
+    def rotate_screen(self, orientation):
+        """
+        Rotate the device screen to the specified orientation.
+
+        :param orientation: A string specifying the screen orientation ('portrait' or 'landscape').
+        """
+        # Map orientation to the corresponding user_rotation value.
+        # 0 for portrait, 1 for landscape (90 degrees rotation).
+        orientation_value = {"portrait": "0", "landscape": "1"}.get(orientation.lower())
+        
+        if orientation_value is None:
+            self.logger.error(f"Unsupported orientation: {orientation}")
+            return
+        
+        # Disable accelerometer-based rotation.
+        self.adb.shell("settings put system accelerometer_rotation 0")
+        
+        # Apply the desired rotation.
+        self.adb.shell(f"settings put system user_rotation {orientation_value}")
+        
+        self.logger.info(f"Rotated device screen to {orientation}.")
