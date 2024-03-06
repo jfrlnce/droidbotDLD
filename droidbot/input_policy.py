@@ -4,7 +4,7 @@ import logging
 import random
 from abc import abstractmethod
 
-from .input_event import InputEvent, KeyEvent, IntentEvent, TouchEvent, ManualEvent, SetTextEvent, KillAppEvent
+from .input_event import InputEvent, KeyEvent, IntentEvent, TouchEvent, ManualEvent, SetTextEvent, KillAppEvent, RotateEvent
 from .utg import UTG
 
 # Max number of restarts
@@ -193,6 +193,10 @@ class UtgBasedInputPolicy(InputPolicy):
         """
         pass
 
+    def should_rotate(self):
+    # Example: 5% chance to rotate
+        return random.random() < 0.1
+
 
 class UtgNaiveSearchPolicy(UtgBasedInputPolicy):
     """
@@ -368,12 +372,16 @@ class UtgGreedySearchPolicy(UtgBasedInputPolicy):
         self.__event_trace = ""
         self.__missed_states = set()
         self.__random_explore = False
-
+    
     def generate_event_based_on_utg(self):
         """
         generate an event based on current UTG
         @return: InputEvent
         """
+        if self.should_rotate():
+            orientation = random.choice(['landscape', 'portrait'])
+            return RotateEvent(orientation)
+        
         current_state = self.current_state
         self.logger.info("Current state: %s" % current_state.state_str)
         if current_state.state_str in self.__missed_states:

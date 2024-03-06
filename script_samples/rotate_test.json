@@ -1,29 +1,25 @@
 {
     "views": {
       "target_button": {
-        "resource_id": "button1",
+        "resource_id": "button_resource_id",
         "class": "android.widget.Button"
       }
     },
     "states": {
-      "initial_state": {
+      "interaction_state": {
         "views": ["target_button"]
       }
     },
     "operations": {
-      "press_button_operation": [
+      "press_and_rotate_operation": [
         {
           "event_type": "touch",
           "target_view": "target_button"
-        }
-      ],
-      "rotate_to_landscape_operation": [
+        },
         {
           "event_type": "rotate",
           "orientation": "landscape"
-        }
-      ],
-      "rotate_to_portrait_operation": [
+        },
         {
           "event_type": "rotate",
           "orientation": "portrait"
@@ -31,11 +27,6 @@
       ]
     },
     "main": {
-      "initial_state": [
-        "press_button_operation",
-        "rotate_to_landscape_operation",
-        "rotate_to_landscape_operation",  
-        "rotate_to_portrait_operation"
-      ]
+      "interaction_state": ["press_and_rotate_operation"]
     }
   }
