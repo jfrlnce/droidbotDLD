@@ -841,8 +841,19 @@ class RotateEvent(InputEvent):
             self.__dict__.update(event_dict)
 
     def send(self, device):
-        super(RotateEvent, self).send(device)
-        device.rotate_screen(self.orientation)
+        if self.orientation not in ['landscape', 'portrait']:
+            raise ValueError("Invalid orientation: {}".format(self.orientation))
+        
+        adb_cmd = "adb shell content insert --uri content://settings/system --bind name:s:accelerometer_rotation --bind value:i:0"
+        os.system(adb_cmd)
+        
+        if self.orientation == 'landscape':
+            adb_cmd = "adb shell content insert --uri content://settings/system --bind name:s:user_rotation --bind value:i:1"
+        else:  # portrait
+            adb_cmd = "adb shell content insert --uri content://settings/system --bind name:s:user_rotation --bind value:i:0"
+        
+        os.system(adb_cmd)
+        time.sleep(1)  # Give the device a second to rotate
 
     def get_event_str(self, state):
         return "%s(orientation=%s)" % (self.__class__.__name__, self.orientation)
