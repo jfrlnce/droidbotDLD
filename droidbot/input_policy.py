@@ -195,7 +195,7 @@ class UtgBasedInputPolicy(InputPolicy):
 
     def should_rotate(self):
     # Example: 5% chance to rotate
-        return random.random() < 0.1
+        return random.random() < 0.50
 
 
 class UtgNaiveSearchPolicy(UtgBasedInputPolicy):

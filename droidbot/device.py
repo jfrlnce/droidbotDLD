@@ -15,6 +15,7 @@ from .adapter.user_input_monitor import UserInputMonitor
 from .adapter.droidbot_ime import DroidBotIme
 from .app import App
 from .intent import Intent
+from .snapshot import compare_states
 
 DEFAULT_NUM = '1234567890'
 DEFAULT_CONTENT = 'Hello world!'
@@ -923,6 +924,10 @@ class Device(object):
 
         :param orientation: A string specifying the screen orientation ('portrait' or 'landscape').
         """
+
+        before_rotation_path = self.take_screenshot()
+
+
         # Map orientation to the corresponding user_rotation value.
         # 0 for portrait, 1 for landscape (90 degrees rotation).
         orientation_value = {"portrait": "0", "landscape": "1"}.get(orientation.lower())
@@ -938,3 +943,9 @@ class Device(object):
         self.adb.shell(f"settings put system user_rotation {orientation_value}")
         
         self.logger.info(f"Rotated device screen to {orientation}.")
+
+        after_rotation_path = self.take_screenshot()
+        if compare_states(before_rotation_path, after_rotation_path):
+            print("Potential data loss detected between rotations.")
+        else:
+            print('no data loss detected between rotation')

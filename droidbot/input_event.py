@@ -841,6 +841,7 @@ class RotateEvent(InputEvent):
             self.__dict__.update(event_dict)
 
     def send(self, device):
+        super(RotateEvent, self).send(device)
         device.rotate_screen(self.orientation)
 
     def get_event_str(self, state):
