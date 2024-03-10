@@ -924,7 +924,7 @@ class Device(object):
 
         :param orientation: A string specifying the screen orientation ('portrait' or 'landscape').
         """
-
+        print('calling rotate_screen')
         before_rotation_path = self.take_screenshot()
 
 

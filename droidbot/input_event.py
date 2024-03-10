@@ -83,6 +83,7 @@ KEY_SetTextEvent = "set_text"
 KEY_IntentEvent = "intent"
 KEY_SpawnEvent = "spawn"
 KEY_KillAppEvent = "kill_app"
+KEY_BackgroundForeGroundEvent = 'BackgroundForeground'
 
 
 class InvalidEventException(Exception):
@@ -841,19 +842,7 @@ class RotateEvent(InputEvent):
             self.__dict__.update(event_dict)
 
     def send(self, device):
-        if self.orientation not in ['landscape', 'portrait']:
-            raise ValueError("Invalid orientation: {}".format(self.orientation))
-        
-        adb_cmd = "adb shell content insert --uri content://settings/system --bind name:s:accelerometer_rotation --bind value:i:0"
-        os.system(adb_cmd)
-        
-        if self.orientation == 'landscape':
-            adb_cmd = "adb shell content insert --uri content://settings/system --bind name:s:user_rotation --bind value:i:1"
-        else:  # portrait
-            adb_cmd = "adb shell content insert --uri content://settings/system --bind name:s:user_rotation --bind value:i:0"
-        
-        os.system(adb_cmd)
-        time.sleep(1)  # Give the device a second to rotate
+        device.rotate_screen(self.orientation)
 
     def get_event_str(self, state):
         return "%s(orientation=%s)" % (self.__class__.__name__, self.orientation)
@@ -868,7 +857,33 @@ class RotateEvent(InputEvent):
             "event_type": self.event_type,
             "orientation": self.orientation
         }
-    
+
+class BackgroundForegroundEvent(InputEvent):
+    """
+    An event to send the app to the background and then bring it back to the foreground.
+    """
+
+    def __init__(self, package_name, event_dict=None):
+        super().__init__()
+        self.event_type = 'background_foreground'
+        self.package_name = package_name
+        if event_dict is not None:
+            self.__dict__.update(event_dict)
+
+    @staticmethod
+    def get_random_instance(device, app):
+        return None
+
+    def send(self, device):
+        device.key_press('HOME')      
+        time.sleep(2)
+        bring_to_foreground_intent = Intent(suffix=self.package_name)
+        device.send_intent(bring_to_foreground_intent)
+
+    def get_event_str(self, state):
+        return f"{self.__class__.__name__}(package={self.package_name})"
+
+
 EVENT_TYPES = {
     KEY_KeyEvent: KeyEvent,
     KEY_TouchEvent: TouchEvent,
@@ -876,5 +891,6 @@ EVENT_TYPES = {
     KEY_SwipeEvent: SwipeEvent,
     KEY_ScrollEvent: ScrollEvent,
     KEY_IntentEvent: IntentEvent,
-    KEY_SpawnEvent: SpawnEvent
+    KEY_SpawnEvent: SpawnEvent,
+    KEY_RotateEvent: RotateEvent
 }
