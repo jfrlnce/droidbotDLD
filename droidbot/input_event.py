@@ -870,6 +870,7 @@ class BackgroundForegroundEvent(InputEvent):
         return BackgroundForegroundEvent(app)
 
     def send(self, device):
+        print("sending backgroundforeground event")
         device.press_key('HOME')
         time.sleep(2)
         device.start_app(self.app)
@@ -886,5 +887,6 @@ EVENT_TYPES = {
     KEY_ScrollEvent: ScrollEvent,
     KEY_IntentEvent: IntentEvent,
     KEY_SpawnEvent: SpawnEvent,
-    KEY_RotateEvent: RotateEvent
+    KEY_RotateEvent: RotateEvent,
+    KEY_BackgroundForeGroundEvent: BackgroundForegroundEvent
 }
