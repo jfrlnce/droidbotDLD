@@ -958,5 +958,21 @@ class Device(object):
         package_name = app.get_package_name()
         self.adb.shell(f'am start -n {package_name}/{main_activity}')
 
+    def handle_background_foreground(self, app):
+        pre_screenshot = self.take_screenshot()
+        self.press_key('HOME')
+        time.sleep(2)  
+
+        self.start_app(app.get_package_name())
+        time.sleep(2)  
+
+        post_screenshot = self.take_screenshot()
+
+        # Compare screenshots
+        if compare_states(pre_screenshot, post_screenshot):
+            print("BackgroundForeground: Data Loss Detected!")
+        else:
+            print("BackgroundForeground: No Data Loss!")
+
 
     
