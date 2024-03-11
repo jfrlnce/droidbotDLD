@@ -859,29 +859,23 @@ class RotateEvent(InputEvent):
         }
 
 class BackgroundForegroundEvent(InputEvent):
-    """
-    An event to send the app to the background and then bring it back to the foreground.
-    """
-
-    def __init__(self, package_name, event_dict=None):
-        super().__init__()
+    
+    def __init__(self, app):
+        super(BackgroundForegroundEvent, self).__init__()
+        self.app = app
         self.event_type = 'background_foreground'
-        self.package_name = package_name
-        if event_dict is not None:
-            self.__dict__.update(event_dict)
 
     @staticmethod
     def get_random_instance(device, app):
-        return None
+        return BackgroundForegroundEvent(app)
 
     def send(self, device):
-        device.key_press('HOME')      
+        device.press_key('HOME')
         time.sleep(2)
-        bring_to_foreground_intent = Intent(suffix=self.package_name)
-        device.send_intent(bring_to_foreground_intent)
+        device.start_app(self.app)
 
     def get_event_str(self, state):
-        return f"{self.__class__.__name__}(package={self.package_name})"
+        return f"BackgroundForegroundEvent for app {self.app.get_package_name()}"
 
 
 EVENT_TYPES = {

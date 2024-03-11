@@ -936,10 +936,8 @@ class Device(object):
             self.logger.error(f"Unsupported orientation: {orientation}")
             return
         
-        # Disable accelerometer-based rotation.
         self.adb.shell("settings put system accelerometer_rotation 0")
-        
-        # Apply the desired rotation.
+    
         self.adb.shell(f"settings put system user_rotation {orientation_value}")
         
         self.logger.info(f"Rotated device screen to {orientation}.")
@@ -949,3 +947,16 @@ class Device(object):
             print("Potential data loss detected between rotations.")
         else:
             print('no data loss detected between rotation')
+
+    def press_key(self, key_name):
+        print("simulating key press")
+        self.adb.shell(f'input keyevent {key_name}')
+
+    def start_app(self, app):
+        print("launch using main activity and package")
+        main_activity = app.get_main_activity()
+        package_name = app.get_package_name()
+        self.adb.shell(f'am start -n {package_name}/{main_activity}')
+
+
+    
