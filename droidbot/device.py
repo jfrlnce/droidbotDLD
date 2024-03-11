@@ -954,9 +954,15 @@ class Device(object):
 
     def start_app(self, app):
         print("launch using main activity and package")
-        main_activity = app.get_main_activity()
-        package_name = app.get_package_name()
-        self.adb.shell(f'am start -n {package_name}/{main_activity}')
+        if isinstance(app, App):
+            main_activity = app.get_main_activity()
+            package_name = app.get_package_name()
+            if main_activity and package_name:
+                self.adb.shell(f'am start -n {package_name}/{main_activity}')
+            else:
+                print("App instance does not have package name or main activity defined.")
+        else:
+            print("Error: App instance required for start_app")
 
     def handle_background_foreground(self, app):
         pre_screenshot = self.take_screenshot()
