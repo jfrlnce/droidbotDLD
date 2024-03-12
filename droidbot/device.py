@@ -970,7 +970,7 @@ class Device(object):
         self.press_key('HOME')
         time.sleep(2)  
 
-        self.start_app(app.get_package_name())
+        self.start_app(app)
         time.sleep(2)  
 
         post_screenshot = self.take_screenshot()
