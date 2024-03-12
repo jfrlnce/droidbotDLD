@@ -1,6 +1,6 @@
 def compare_properties(self, state1, state2):
     
-        dict1 = state1.to_dict()
-        dict2 = state2.to_dict()
+        dict1 = state1
+        dict2 = state2
 
         return dict1 == dict2

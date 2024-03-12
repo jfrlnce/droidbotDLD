@@ -971,7 +971,7 @@ class Device(object):
         time.sleep(1)
         property1 = self.get_current_state()
         print("property 1")
-        print(property1)
+        print(property1.to_dict())
         self.press_key('HOME')
         time.sleep(2)  
 
@@ -982,7 +982,7 @@ class Device(object):
         time.sleep(1)  
         property2 = self.get_current_state()
         print("property 2")
-        print(property2)
+        print(property2.to_dict())
         # Compare screenshots
         if compare_states(pre_screenshot, post_screenshot):
             print("BackgroundForeground: Data Loss Detected!")
@@ -990,7 +990,7 @@ class Device(object):
             print("BackgroundForeground: No Data Loss!")
 
         # compare properties
-        if compare_properties(property1,property2):
+        if compare_properties(property1.to_dict(), property2.to_dict()):
             print("property oracle: BackgroundForeground: Data Loss Detected!")
         else:
             print("property oracle: BackgroundForeground: No Data Loss Detected!!")
