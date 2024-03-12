@@ -863,17 +863,13 @@ class BackgroundForegroundEvent(InputEvent):
     def __init__(self, app):
         super(BackgroundForegroundEvent, self).__init__()
         self.app = app
-        self.event_type = 'background_foreground'
 
     @staticmethod
     def get_random_instance(device, app):
         return BackgroundForegroundEvent(app)
 
     def send(self, device):
-        print("sending backgroundforeground event")
-        device.press_key('HOME')
-        time.sleep(2) 
-        device.start_app(self.app)
+        device.handle_background_foreground(self.app)
         
     def to_dict(self):   
         event_dict = super(BackgroundForegroundEvent, self).to_dict()

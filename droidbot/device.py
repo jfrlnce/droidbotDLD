@@ -965,6 +965,7 @@ class Device(object):
             print("Error: App instance required for start_app")
 
     def handle_background_foreground(self, app):
+        print("handle background foreground")
         pre_screenshot = self.take_screenshot()
         self.press_key('HOME')
         time.sleep(2)  
