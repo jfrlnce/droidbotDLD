@@ -16,6 +16,7 @@ from .adapter.droidbot_ime import DroidBotIme
 from .app import App
 from .intent import Intent
 from .snapshot import compare_states
+from .property import compare_properties
 
 DEFAULT_NUM = '1234567890'
 DEFAULT_CONTENT = 'Hello world!'
@@ -967,6 +968,7 @@ class Device(object):
     def handle_background_foreground(self, app):
         print("handle background foreground")
         pre_screenshot = self.take_screenshot()
+        property1 = self.device.get_current_state()
         self.press_key('HOME')
         time.sleep(2)  
 
@@ -974,12 +976,18 @@ class Device(object):
         time.sleep(2)  
 
         post_screenshot = self.take_screenshot()
-
+        property2 = self.device.get_current_state()
         # Compare screenshots
         if compare_states(pre_screenshot, post_screenshot):
             print("BackgroundForeground: Data Loss Detected!")
         else:
             print("BackgroundForeground: No Data Loss!")
+
+        # compare properties
+        if compare_properties(property1,property2):
+            print("property oracle: BackgroundForeground: Data Loss Detected!")
+        else:
+            print("property oracle: BackgroundForeground: No Data Loss Detected!!")
 
 
     
