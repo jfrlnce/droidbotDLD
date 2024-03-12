@@ -875,7 +875,10 @@ class BackgroundForegroundEvent(InputEvent):
         time.sleep(2) 
         device.start_app(self.app)
         
-
+    def to_dict(self):   
+        event_dict = super(BackgroundForegroundEvent, self).to_dict()
+        event_dict['app'] = self.app.get_package_name()  
+        return event_dict
 
 EVENT_TYPES = {
     KEY_KeyEvent: KeyEvent,
