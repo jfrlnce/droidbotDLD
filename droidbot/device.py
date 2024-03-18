@@ -920,34 +920,29 @@ class Device(object):
         self.pause_sending_event = False
     
     def rotate_screen(self, orientation):
-        """
-        Rotate the device screen to the specified orientation.
-
-        :param orientation: A string specifying the screen orientation ('portrait' or 'landscape').
-        """
         print('calling rotate_screen')
         before_rotation_path = self.take_screenshot()
-
-
-        # Map orientation to the corresponding user_rotation value.
-        # 0 for portrait, 1 for landscape (90 degrees rotation).
         orientation_value = {"portrait": "0", "landscape": "1"}.get(orientation.lower())
-        
+    
         if orientation_value is None:
             self.logger.error(f"Unsupported orientation: {orientation}")
             return
-        
-        self.adb.shell("settings put system accelerometer_rotation 0")
     
         self.adb.shell(f"settings put system user_rotation {orientation_value}")
-        
+        time.sleep(1) 
+    
         self.logger.info(f"Rotated device screen to {orientation}.")
+    
+        if orientation.lower() == 'landscape':
+            print('Rotating screen back to portrait')
+            self.adb.shell("settings put system user_rotation 0")  
+            time.sleep(1)  
 
         after_rotation_path = self.take_screenshot()
         if compare_states(before_rotation_path, after_rotation_path):
             print("Potential data loss detected between rotations.")
         else:
-            print('no data loss detected between rotation')
+            print('No data loss detected between rotations.')
 
     def press_key(self, key_name):
         print("simulating key press")
@@ -984,16 +979,12 @@ class Device(object):
         print("property 2")
         print(property2.to_dict())
         # Compare screenshots
-        if compare_states(pre_screenshot, post_screenshot):
+        if compare_states(pre_screenshot, post_screenshot) or compare_properties(property1.to_dict(), property2.to_dict()):
             print("BackgroundForeground: Data Loss Detected!")
         else:
             print("BackgroundForeground: No Data Loss!")
 
-        # compare properties
-        if compare_properties(property1.to_dict(), property2.to_dict()):
-            print("property oracle: BackgroundForeground: Data Loss Detected!")
-        else:
-            print("property oracle: BackgroundForeground: No Data Loss Detected!!")
+        
 
 
     
