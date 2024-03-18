@@ -4,6 +4,7 @@ import re
 import subprocess
 import sys
 import time
+import threading
 
 from .adapter.adb import ADB
 from .adapter.droidbot_app import DroidBotAppConn
@@ -102,6 +103,9 @@ class Device(object):
         if self.get_sdk_version() >= 32:
             self.logger.info("disable minicap on sdk >= 32")
             self.adapters[self.minicap] = False
+
+        self.crash_monitor_thread = threading.Thread(target=self.monitor_crashes)
+        self.crash_monitor_thread.start()
 
     def check_connectivity(self):
         """
@@ -906,6 +910,14 @@ class Device(object):
             return self.get_random_port()
         self.__used_ports.append(port)
         return port
+    
+    def monitor_crashes(self):
+        print('monitoring crashes')
+        logcat_cmd = ['adb', '-s', self.serial, 'logcat']
+        with subprocess.Popen(logcat_cmd, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True) as proc:
+            for line in proc.stdout:
+                if 'FATAL EXCEPTION' in line:
+                    print(f"Crash detected: {line}")
 
     def handle_rotation(self):
         if not self.adapters[self.minicap]:
@@ -922,6 +934,8 @@ class Device(object):
     def rotate_screen(self, orientation):
         print('calling rotate_screen')
         before_rotation_path = self.take_screenshot()
+        time.sleep(1)
+        property1 = self.get_current_state()
         orientation_value = {"portrait": "0", "landscape": "1"}.get(orientation.lower())
     
         if orientation_value is None:
@@ -939,7 +953,9 @@ class Device(object):
             time.sleep(1)  
 
         after_rotation_path = self.take_screenshot()
-        if compare_states(before_rotation_path, after_rotation_path):
+        time.sleep(1)  
+        property2 = self.get_current_state()
+        if compare_states(before_rotation_path, after_rotation_path) or compare_properties(property1.to_dict(), property2.to_dict()):
             print("Potential data loss detected between rotations.")
         else:
             print('No data loss detected between rotations.')
