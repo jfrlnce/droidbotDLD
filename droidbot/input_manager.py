@@ -55,10 +55,11 @@ class InputManager(object):
         self.monkey = None
 
         if script_path is not None:
-            self.policy_name = POLICY_NONE
+            
             print('script path is not none!')
             f = open(script_path, 'r')
             script_dict = json.load(f)
+            print('script_dict is')
             print(script_dict)
             from .input_script import DroidBotScript
             self.script = DroidBotScript(script_dict)
