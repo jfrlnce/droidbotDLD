@@ -18,7 +18,7 @@ from .app import App
 from .intent import Intent
 from .snapshot import compare_states
 from .property import compare_properties
-
+from globals import data_loss_table
 DEFAULT_NUM = '1234567890'
 DEFAULT_CONTENT = 'Hello world!'
 
@@ -955,8 +955,15 @@ class Device(object):
         after_rotation_path = self.take_screenshot()
         time.sleep(1)  
         property2 = self.get_current_state()
+        activity_name = self.get_current_activity()
         if compare_states(before_rotation_path, after_rotation_path) or compare_properties(property1.to_dict(), property2.to_dict()):
-            print("Potential data loss detected between rotations.")
+             print("Rotation: Data Loss Detected!")
+             if activity_name:
+                if activity_name in data_loss_table and data_loss_table[activity_name] == 'Rotation':
+                    print('duplicate found')
+                else:
+                    print('rotation: Data loss detected and not a duplicate')
+                    data_loss_table[activity_name] = 'Rotation'
         else:
             print('No data loss detected between rotations.')
 
@@ -994,9 +1001,15 @@ class Device(object):
         property2 = self.get_current_state()
         print("property 2")
         print(property2.to_dict())
+        activity_name = self.get_current_activity()
         # Compare screenshots
         if compare_states(pre_screenshot, post_screenshot) or compare_properties(property1.to_dict(), property2.to_dict()):
-            print("BackgroundForeground: Data Loss Detected!")
+            if activity_name:
+                if activity_name in data_loss_table and data_loss_table[activity_name] == 'BackgroundForeground':
+                    print('duplicate found')
+                else:
+                    print('background foreground data loss and not a duplicate')
+                    data_loss_table[activity_name] = 'BackgroundForeground'
         else:
             print("BackgroundForeground: No Data Loss!")
 

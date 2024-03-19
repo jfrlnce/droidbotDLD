@@ -1,0 +1,1 @@
+data_loss_table = {}
