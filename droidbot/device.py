@@ -5,7 +5,7 @@ import subprocess
 import sys
 import time
 import threading
-
+from globals import data_loss_table
 from .adapter.adb import ADB
 from .adapter.droidbot_app import DroidBotAppConn
 from .adapter.logcat import Logcat
@@ -18,7 +18,7 @@ from .app import App
 from .intent import Intent
 from .snapshot import compare_states
 from .property import compare_properties
-from globals import data_loss_table
+
 DEFAULT_NUM = '1234567890'
 DEFAULT_CONTENT = 'Hello world!'
 
