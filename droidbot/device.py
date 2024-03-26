@@ -5,7 +5,7 @@ import subprocess
 import sys
 import time
 import threading
-from globals import data_loss_table
+from .globals import data_loss_table, rotation_data_loss_activities, background_foreground_data_loss_activities
 from .adapter.adb import ADB
 from .adapter.droidbot_app import DroidBotAppConn
 from .adapter.logcat import Logcat
@@ -955,15 +955,17 @@ class Device(object):
         after_rotation_path = self.take_screenshot()
         time.sleep(1)  
         property2 = self.get_current_state()
-        activity_name = self.get_current_activity()
+        activity_name = self.get_top_activity_name()
         if compare_states(before_rotation_path, after_rotation_path) or compare_properties(property1.to_dict(), property2.to_dict()):
              print("Rotation: Data Loss Detected!")
              if activity_name:
-                if activity_name in data_loss_table and data_loss_table[activity_name] == 'Rotation':
+                if activity_name in rotation_data_loss_activities:
                     print('duplicate found')
                 else:
                     print('rotation: Data loss detected and not a duplicate')
-                    data_loss_table[activity_name] = 'Rotation'
+                    rotation_data_loss_activities.append(activity_name)
+                    print("---Data Loss Table---")
+                    print(rotation_data_loss_activities)
         else:
             print('No data loss detected between rotations.')
 
@@ -988,8 +990,8 @@ class Device(object):
         pre_screenshot = self.take_screenshot()
         time.sleep(1)
         property1 = self.get_current_state()
-        print("property 1")
-        print(property1.to_dict())
+        #print("property 1")
+        #print(property1.to_dict())
         self.press_key('HOME')
         time.sleep(2)  
 
@@ -999,17 +1001,19 @@ class Device(object):
         post_screenshot = self.take_screenshot()
         time.sleep(1)  
         property2 = self.get_current_state()
-        print("property 2")
-        print(property2.to_dict())
-        activity_name = self.get_current_activity()
+        #print("property 2")
+        #print(property2.to_dict())
+        activity_name = self.get_top_activity_name()
         # Compare screenshots
         if compare_states(pre_screenshot, post_screenshot) or compare_properties(property1.to_dict(), property2.to_dict()):
             if activity_name:
-                if activity_name in data_loss_table and data_loss_table[activity_name] == 'BackgroundForeground':
+                if activity_name in background_foreground_data_loss_activities:
                     print('duplicate found')
                 else:
                     print('background foreground data loss and not a duplicate')
-                    data_loss_table[activity_name] = 'BackgroundForeground'
+                    background_foreground_data_loss_activities.append(activity_name)
+                    print("---Data Loss Table---")
+                    print(background_foreground_data_loss_activities)
         else:
             print("BackgroundForeground: No Data Loss!")
 

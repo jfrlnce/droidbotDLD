@@ -194,10 +194,10 @@ class UtgBasedInputPolicy(InputPolicy):
         pass
 
     def should_rotate(self):
-        return random.random() < 0.1
+        return random.random() < 0.3
 
     def should_background_foreground(self):
-        return random.random() < 0.1
+        return random.random() < 0.05
 
 class UtgNaiveSearchPolicy(UtgBasedInputPolicy):
     """
