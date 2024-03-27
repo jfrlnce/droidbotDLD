@@ -76,14 +76,14 @@ KEY_TouchEvent = "touch"
 KEY_LongTouchEvent = "long_touch"
 KEY_SelectEvent = "select"
 KEY_UnselectEvent = "unselect"
-KEY_RotateEvent = "rotate"
+#KEY_RotateEvent = "rotate"
 KEY_SwipeEvent = "swipe"
 KEY_ScrollEvent = "scroll"
 KEY_SetTextEvent = "set_text"
 KEY_IntentEvent = "intent"
 KEY_SpawnEvent = "spawn"
 KEY_KillAppEvent = "kill_app"
-KEY_BackgroundForeGroundEvent = 'BackgroundForeground'
+#KEY_BackgroundForeGroundEvent = 'BackgroundForeground'
 
 
 class InvalidEventException(Exception):
@@ -153,9 +153,9 @@ class InputEvent(object):
             return ExitEvent(event_dict=event_dict)
         elif event_type == KEY_SpawnEvent:
             return SpawnEvent(event_dict=event_dict)
-        elif event_type == KEY_RotateEvent:
+        """ elif event_type == KEY_RotateEvent:
             return RotateEvent(event_dict=event_dict)
-
+        """
     @abstractmethod
     def get_event_str(self, state):
         pass
@@ -829,11 +829,8 @@ class SpawnEvent(InputEvent):
 
     def get_event_str(self, state):
         return "%s()" % self.__class__.__name__
-
+"""
 class RotateEvent(InputEvent):
-    """
-    An event to rotate the device screen.
-    """
     def __init__(self, orientation, event_dict=None):
         super(RotateEvent, self).__init__()
         self.event_type = KEY_RotateEvent
@@ -857,7 +854,9 @@ class RotateEvent(InputEvent):
             "event_type": self.event_type,
             "orientation": self.orientation
         }
-
+    
+"""   
+"""
 class BackgroundForegroundEvent(InputEvent):
     
     def __init__(self, app):
@@ -875,7 +874,19 @@ class BackgroundForegroundEvent(InputEvent):
         event_dict = super(BackgroundForegroundEvent, self).to_dict()
         event_dict['app'] = self.app.get_package_name()  
         return event_dict
+"""    
+class DataLossDetectionEvent(InputEvent):
+    def __init__(self):
+        super().__init__()
+        self.event_type = "DataLossDetection"
 
+    def send(self, device):
+        device.handle_dataLossDetection()
+
+    @staticmethod
+    def get_random_instance(device, app):
+        return DataLossDetectionEvent()
+    
 EVENT_TYPES = {
     KEY_KeyEvent: KeyEvent,
     KEY_TouchEvent: TouchEvent,
@@ -884,6 +895,7 @@ EVENT_TYPES = {
     KEY_ScrollEvent: ScrollEvent,
     KEY_IntentEvent: IntentEvent,
     KEY_SpawnEvent: SpawnEvent,
-    KEY_RotateEvent: RotateEvent,
-    KEY_BackgroundForeGroundEvent: BackgroundForegroundEvent
+    ##KEY_RotateEvent: RotateEvent,
+    ##KEY_BackgroundForeGroundEvent: BackgroundForegroundEvent,
+   
 }

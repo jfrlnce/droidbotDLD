@@ -1017,7 +1017,10 @@ class Device(object):
         else:
             print("BackgroundForeground: No Data Loss!")
 
-        
-
-
+    def handle_dataLossDetection(self):
+        print("Starting data loss detection sequence...")
+        self.rotate_screen('landscape')
+        self.rotate_screen('portrait')
+        self.handle_background_foreground()
+        print("Data loss detection sequence completed.")
     

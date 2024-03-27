@@ -4,7 +4,7 @@ import logging
 import random
 from abc import abstractmethod
 
-from .input_event import InputEvent, KeyEvent, IntentEvent, TouchEvent, ManualEvent, SetTextEvent, KillAppEvent, RotateEvent, BackgroundForegroundEvent
+from .input_event import InputEvent, KeyEvent, IntentEvent, TouchEvent, ManualEvent, SetTextEvent, KillAppEvent, DataLossDetectionEvent
 from .utg import UTG
 
 # Max number of restarts
@@ -192,13 +192,13 @@ class UtgBasedInputPolicy(InputPolicy):
         :return: InputEvent
         """
         pass
-
+""""
     def should_rotate(self):
         return random.random() < 0.3
 
     def should_background_foreground(self):
         return random.random() < 0.05
-
+"""
 class UtgNaiveSearchPolicy(UtgBasedInputPolicy):
     """
     depth-first strategy to explore UFG (old)
@@ -379,13 +379,14 @@ class UtgGreedySearchPolicy(UtgBasedInputPolicy):
         generate an event based on current UTG
         @return: InputEvent
         """
+        """
         if self.should_rotate():
             orientation = random.choice(['landscape', 'portrait'])
             return RotateEvent(orientation)
         
         if self.should_background_foreground():
             return BackgroundForegroundEvent.get_random_instance(self.device, self.app)
-        
+        """
         current_state = self.current_state
         self.logger.info("Current state: %s" % current_state.state_str)
         if current_state.state_str in self.__missed_states:
@@ -590,6 +591,11 @@ class UtgReplayPolicy(InputPolicy):
 
             curr_event_idx = self.event_idx
             self.__update_utg()
+            if self.last_state is None or not self.current_state.equals(self.last_state):
+                # This is a new state, so we trigger the DataLossDetectionEvent
+                print("New state detected, triggering DataLossDetectionEvent...")
+                return DataLossDetectionEvent.get_random_instance(self.device, self.app)
+            
             while curr_event_idx < len(self.event_paths):
                 event_path = self.event_paths[curr_event_idx]
                 with open(event_path, "r") as f:
