@@ -881,7 +881,7 @@ class DataLossDetectionEvent(InputEvent):
         self.event_type = "DataLossDetection"
 
     def send(self, device):
-        device.handle_dataLossDetection()
+        device.handle_dataLossDetection(self.app)
 
     @staticmethod
     def get_random_instance(device, app):
