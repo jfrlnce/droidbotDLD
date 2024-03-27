@@ -876,16 +876,17 @@ class BackgroundForegroundEvent(InputEvent):
         return event_dict
 """    
 class DataLossDetectionEvent(InputEvent):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, app):
+        super().__init__(self, app)
         self.event_type = "DataLossDetection"
+        self.app = app
 
     def send(self, device):
         device.handle_dataLossDetection(self.app)
 
     @staticmethod
     def get_random_instance(device, app):
-        return DataLossDetectionEvent()
+        return DataLossDetectionEvent(app)
     
 EVENT_TYPES = {
     KEY_KeyEvent: KeyEvent,
