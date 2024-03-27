@@ -447,7 +447,10 @@ class UtgGreedySearchPolicy(UtgBasedInputPolicy):
             # If the app is in foreground
             self.__num_steps_outside = 0
 
-        if self.last_state is None or not self.current_state == self.last_state:
+        print("--Debug--")
+        print(self.last_state)
+        print(self.current_state)
+        if self.last_state is None or self.current_state != self.last_state:
             # This is a new state, so we trigger the DataLossDetectionEvent
             print("New state detected, triggering DataLossDetectionEvent...")
             return DataLossDetectionEvent.get_random_instance(self.device, self.app)

@@ -877,7 +877,7 @@ class BackgroundForegroundEvent(InputEvent):
 """    
 class DataLossDetectionEvent(InputEvent):
     def __init__(self, app):
-        super().__init__(self, app)
+        super(DataLossDetectionEvent, self).__init__()
         self.event_type = "DataLossDetection"
         self.app = app
 
