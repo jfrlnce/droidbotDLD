@@ -146,7 +146,12 @@ class UtgBasedInputPolicy(InputPolicy):
             return KeyEvent(name="BACK")
 
         self.__update_utg()
-
+        """
+        if self.last_state is None or not self.current_state.equals(self.last_state):
+            # This is a new state, so we trigger the DataLossDetectionEvent
+            print("New state detected, triggering DataLossDetectionEvent...")
+            return DataLossDetectionEvent.get_random_instance(self.device, self.app)
+        """    
         # update last view trees for humanoid
         if self.device.humanoid is not None:
             self.humanoid_view_trees = self.humanoid_view_trees + [self.current_state.view_tree]
@@ -442,6 +447,10 @@ class UtgGreedySearchPolicy(UtgBasedInputPolicy):
             # If the app is in foreground
             self.__num_steps_outside = 0
 
+        if self.last_state is None or not self.current_state == self.last_state:
+            # This is a new state, so we trigger the DataLossDetectionEvent
+            print("New state detected, triggering DataLossDetectionEvent...")
+            return DataLossDetectionEvent.get_random_instance(self.device, self.app)
         # Get all possible input events
         possible_events = current_state.get_possible_input()
 
@@ -590,12 +599,7 @@ class UtgReplayPolicy(InputPolicy):
                 return KeyEvent(name="BACK")
 
             curr_event_idx = self.event_idx
-            self.__update_utg()
-            if self.last_state is None or not self.current_state.equals(self.last_state):
-                # This is a new state, so we trigger the DataLossDetectionEvent
-                print("New state detected, triggering DataLossDetectionEvent...")
-                return DataLossDetectionEvent.get_random_instance(self.device, self.app)
-            
+            self.__update_utg()        
             while curr_event_idx < len(self.event_paths):
                 event_path = self.event_paths[curr_event_idx]
                 with open(event_path, "r") as f:
