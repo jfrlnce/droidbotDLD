@@ -7,6 +7,7 @@ from abc import abstractmethod
 from .input_event import InputEvent, KeyEvent, IntentEvent, TouchEvent, ManualEvent, SetTextEvent, KillAppEvent, DataLossDetectionEvent
 from .utg import UTG
 
+from .globals import activities_visited
 # Max number of restarts
 MAX_NUM_RESTARTS = 5
 # Max number of steps outside the app
@@ -447,13 +448,19 @@ class UtgGreedySearchPolicy(UtgBasedInputPolicy):
             # If the app is in foreground
             self.__num_steps_outside = 0
 
+    
+        current_activity = self.device.get_top_activity_name()
         print("--Debug--")
-        print(self.last_state)
-        print(self.current_state)
-        if self.last_state is None or self.current_state != self.last_state:
+        print(current_state.state_str)
+        print(activities_visited)
+        if current_state.state_str and current_state.state_str not in activities_visited:
             # This is a new state, so we trigger the DataLossDetectionEvent
             print("New state detected, triggering DataLossDetectionEvent...")
+            activities_visited.append(current_state.state_str)
+            print(f"Added {current_state.state_str} to activities_visited")
             return DataLossDetectionEvent.get_random_instance(self.device, self.app)
+        
+        
         # Get all possible input events
         possible_events = current_state.get_possible_input()
 
